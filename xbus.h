@@ -65,8 +65,6 @@ namespace xsens
             float f32[4];
             double f64[4];
         } quat;
-        inline void get_quat(float (&_quat)[4]) { memcpy(_quat, quat.f32, sizeof(_quat)); }
-        inline void get_quat(double (&_quat)[4]) { memcpy(_quat, quat.f64, sizeof(_quat)); }
         inline const GnssData& get_gnss() const { return gnss_data; }
 
     protected:
