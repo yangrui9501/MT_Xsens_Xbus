@@ -1,25 +1,26 @@
 /**
  * @file xbus_utilize.hpp
  * @author your name (you@domain.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2023-01-08
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #pragma once
 
 #include <Arduino.h>
 #include <xbus.h>
-#include <attitude_kinematics.hpp>
 
-#define XBUS_DATA_CONFIG_GNSS_PVT 0
-#define XBUS_DATA_CONFIG_INS 0
+#define XBUS_DATA_CONFIG_GNSS_PVT 1
+#define XBUS_DATA_CONFIG_INS 1
 #define XBUS_DATA_CONFIG_ORIENTATION 1
 #define XBUS_DATA_CONFIG_IMU 1
 
+namespace xsens
+{
 template <class T>
 struct xbus_motion_data
 {
@@ -56,11 +57,52 @@ struct xbus_motion_data
 typedef struct xbus_motion_data<float> xbus_motion_data_float;
 typedef struct xbus_motion_data<double> xbus_motion_data_double;
 
-void xbus_get_all_data(xsens::Xbus &xbus, xbus_motion_data_double &data)
+void quat_to_euler(double (&quat)[4], double (&euler321)[3])
+{
+    double &q0 = quat[0];
+    double &q1 = quat[1];
+    double &q2 = quat[2];
+    double &q3 = quat[3];
+
+    double q0q1 = q0 * q1;
+    double q2q2 = q2 * q2;
+    double q2q3 = q2 * q3;
+    double q1q1 = q1 * q1;
+    double q0q2 = q0 * q2;
+    double q1q3 = q1 * q3;
+    double q0q3 = q0 * q3;
+    double q1q2 = q1 * q2;
+    double q3q3 = q3 * q3;
+
+    euler321[0] = atan2(2.0 * (q0q1 + q2q3), 1.0 - 2.0 * (q1q1 + q2q2));
+    euler321[1] = asin(2.0 * (q0q2 - q1q3));
+    euler321[2] = atan2(2.0 * (q0q3 + q1q2), 1.0 - 2.0 * (q2q2 + q3q3));
+}
+
+void euler_to_quat(double (&euler321)[3], double (&quat)[4])
+{
+    double &phi = euler321[0];
+    double &theta = euler321[1];
+    double &psi = euler321[2];
+
+    double cphi = cos(phi / 2.0);
+    double ctheta = cos(theta / 2.0);
+    double cpsi = cos(psi / 2.0);
+    double sphi = sin(phi / 2.0);
+    double stheta = sin(theta / 2.0);
+    double spsi = sin(psi / 2.0);
+
+    quat[0] = cphi * ctheta * cpsi + sphi * stheta * spsi;
+    quat[1] = sphi * ctheta * cpsi - cphi * stheta * spsi;
+    quat[2] = cphi * stheta * cpsi + sphi * ctheta * spsi;
+    quat[3] = cphi * ctheta * spsi - sphi * stheta * cpsi;
+}
+
+void xbus_get_all_data(xsens::Xbus &xbus, xsens::xbus_motion_data_double &data)
 {
 #if XBUS_DATA_CONFIG_ORIENTATION
     memcpy(data.quat, xbus.quat.f64, sizeof(data.quat));
-    Attitude::quaternion_to_euler(data.quat, data.euler);
+    quat_to_euler(data.quat, data.euler);
 #endif
 
 #if XBUS_DATA_CONFIG_IMU
@@ -86,4 +128,5 @@ void xbus_get_all_data(xsens::Xbus &xbus, xbus_motion_data_double &data)
     data.lon = xbus.get_gnss().get_pvt().lon;
     data.height = xbus.get_gnss().get_pvt().height;
 #endif
+}
 }
