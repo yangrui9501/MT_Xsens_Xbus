@@ -65,6 +65,10 @@ namespace xsens
             float f32[4];
             double f64[4];
         } quat;
+
+        float accel_hr[3];
+        float gyro_hr[3];
+        uint32_t baro;
         inline const GnssData& get_gnss() const { return gnss_data; }
 
     protected:

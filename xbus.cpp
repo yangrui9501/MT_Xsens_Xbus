@@ -186,7 +186,14 @@ namespace xsens
                 xbus_swap_uint64(&s, &s);
             }
             break; // 2223-01-06 ok
-
+        case XBUS_DATA_ID_GYRO_HR_FLOAT_ENU:
+            read_payload();
+            memcpy(gyro_hr, packet.payload, packet.length);
+            for (auto &s : gyro_hr)
+            {
+                xbus_swap_uint32(&s, &s);
+            }
+            break;
         case XBUS_DATA_ID_ACCEL_FLOAT_ENU:
 
             read_payload();
@@ -206,6 +213,14 @@ namespace xsens
                 xbus_swap_uint64(&s, &s);
             }
             break; // 2023-01-06 ok
+        case XBUS_DATA_ID_ACCEL_HR_FLOAT_ENU:
+            read_payload();
+            memcpy(accel_hr, packet.payload, packet.length);
+            for (auto &s : accel_hr)
+            {
+                xbus_swap_uint32(&s, &s);
+            }
+            break;
         case XBUS_DATA_ID_MAG_FLOAT_ENU:
             timer.mag.elapsed();
             timer.mag.begin();
@@ -225,6 +240,12 @@ namespace xsens
                 xbus_swap_uint64(&s, &s);
             }
             break; // 2023-01-06 ok
+        case XBUS_DATA_ID_BARO_PRESSURE_DOUBLE_ENU:
+            read_payload();
+            memcpy(&baro, packet.payload, packet.length);
+            xbus_swap_uint32(&baro, &baro);
+            break;
+
         case XBUS_DATA_ID_LATLON_FLOAT_ENU:
             read_payload();
             memcpy(latlon.f32, packet.payload, packet.length);
