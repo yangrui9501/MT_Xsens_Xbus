@@ -14,8 +14,8 @@
 #include <Arduino.h>
 #include <xbus.h>
 
-#define XBUS_DATA_CONFIG_GNSS_PVT 1
-#define XBUS_DATA_CONFIG_INS 1
+#define XBUS_DATA_CONFIG_GNSS_PVT 0
+#define XBUS_DATA_CONFIG_INS 0
 #define XBUS_DATA_CONFIG_ORIENTATION 1
 #define XBUS_DATA_CONFIG_IMU 1
 #define XBUS_DATA_CONFIG_BARO 1
@@ -175,6 +175,7 @@ namespace xsens
         Serial.print(")");
     }
 
+#if XBUS_DATA_CONFIG_INS
     void print_ins(xsens::xbus_motion_data_double &data)
     {
         Serial.print("LLH: (");
@@ -191,7 +192,9 @@ namespace xsens
         Serial.print(data.velocity[2]);
         Serial.print(")");
     }
+#endif
 
+#if XBUS_DATA_CONFIG_GNSS_PVT
     void print_gnss_info(xsens::xbus_motion_data_double &data)
     {
         Serial.print("MTi GPS Data | ");
@@ -215,4 +218,5 @@ namespace xsens
         Serial.print(")");
         Serial.println();
     }
+#endif
 }
