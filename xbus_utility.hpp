@@ -138,4 +138,81 @@ namespace xsens
         data.height = xbus.get_gnss().get_pvt().height;
 #endif
     }
+
+    void print_quaternion(xsens::xbus_motion_data_double &data)
+    {
+        Serial.print("Quaternion (w,x,y,z): (");
+        Serial.print(data.quat[0]);
+        Serial.print(", ");
+        Serial.print(data.quat[1]);
+        Serial.print(", ");
+        Serial.print(data.quat[2]);
+        Serial.print(", ");
+        Serial.print(data.quat[3]);
+        Serial.print(")");
+    }
+
+    void print_imu(xsens::xbus_motion_data_double &data)
+    {
+        Serial.print("Gyro: (");
+        Serial.print(data.gyro[0]);
+        Serial.print(", ");
+        Serial.print(data.gyro[1]);
+        Serial.print(", ");
+        Serial.print(data.gyro[2]);
+        Serial.print(") | Accel: (");
+        Serial.print(data.accel[0]);
+        Serial.print(",");
+        Serial.print(data.accel[1]);
+        Serial.print(", ");
+        Serial.print(data.accel[2]);
+        Serial.print(") | Mag: (");
+        Serial.print(data.mag[0]);
+        Serial.print(", ");
+        Serial.print(data.mag[1]);
+        Serial.print(", ");
+        Serial.print(data.mag[2]);
+        Serial.print(")");
+    }
+
+    void print_ins(xsens::xbus_motion_data_double &data)
+    {
+        Serial.print("LLH: (");
+        Serial.print(data.latlon[0]);
+        Serial.print(", ");
+        Serial.print(data.latlon[1]);
+        Serial.print(", ");
+        Serial.print(data.altitude);
+        Serial.print(") | VelXYZ: (");
+        Serial.print(data.velocity[0]);
+        Serial.print(",");
+        Serial.print(data.velocity[1]);
+        Serial.print(", ");
+        Serial.print(data.velocity[2]);
+        Serial.print(")");
+    }
+
+    void print_gnss_info(xsens::xbus_motion_data_double &data)
+    {
+        Serial.print("MTi GPS Data | ");
+        Serial.print(data.year);
+        Serial.print("-");
+        Serial.print(data.month);
+        Serial.print("-");
+        Serial.print(data.day);
+        Serial.print(" | ");
+        Serial.print(data.hour);
+        Serial.print(":");
+        Serial.print(data.min);
+        Serial.print(":");
+        Serial.print(data.sec);
+        Serial.print(" | LLH: (");
+        Serial.print(data.lat);
+        Serial.print(", ");
+        Serial.print(data.lon);
+        Serial.print(", ");
+        Serial.print(data.height);
+        Serial.print(")");
+        Serial.println();
+    }
 }
