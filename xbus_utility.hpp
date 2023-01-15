@@ -195,7 +195,7 @@ namespace xsens
 #endif
 
 #if XBUS_DATA_CONFIG_GNSS_PVT
-    void print_gnss_info(xsens::xbus_motion_data_double &data)
+    void print_gnss(xsens::xbus_motion_data_double &data)
     {
         Serial.print("MTi GPS Data | ");
         Serial.print(data.year);
