@@ -48,7 +48,7 @@ namespace xsens
         {
             float f32;
             double f64;
-        } altitude;
+        } altitude, temperature;
         union
         {
             float f32[2];
@@ -58,7 +58,7 @@ namespace xsens
         {
             float f32[3];
             double f64[3];
-        } gyro, accel, mag, velocity, euler;
+        } gyro, accel, mag, velocity, euler, delta_v, free_accel;
 
         union
         {
