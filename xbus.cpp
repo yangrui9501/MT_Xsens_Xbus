@@ -128,6 +128,11 @@ namespace xsens
         uint16_t id16 = (uint16_t)(((uint16_t)(packet.id[0]) << 8U) | ((uint16_t)packet.id[1]));
         switch (id16)
         {
+        case XBUS_DATA_ID_TEMPERATURE_DOUBLE:
+            read_payload();
+            memcpy(&temperature.f64, packet.payload, packet.length);
+            xbus_swap_uint64(&temperature.f64, &temperature.f64);
+            break;
         case XBUS_DATA_ID_EULER_FLOAT_ENU:
 
             read_payload();
@@ -213,6 +218,15 @@ namespace xsens
                 xbus_swap_uint64(&s, &s);
             }
             break; // 2023-01-06 ok
+
+        case XBUS_DATA_ID_FREE_ACCEL_DOUBLE_ENU:
+            read_payload();
+            memcpy(free_accel.f64, packet.payload, packet.length);
+            for (auto &s : free_accel.f64)
+            {
+                xbus_swap_uint64(&s, &s);
+            }
+            break;
         case XBUS_DATA_ID_ACCEL_HR_FLOAT_ENU:
             read_payload();
             memcpy(accel_hr, packet.payload, packet.length);
@@ -245,7 +259,14 @@ namespace xsens
             memcpy(&baro, packet.payload, packet.length);
             xbus_swap_uint32(&baro, &baro);
             break;
-
+        case XBUS_DATA_ID_DELTA_V_DOUBLE_ENU:
+            read_payload();
+            memcpy(delta_v.f64, packet.payload, packet.length);
+            for (auto &s: delta_v.f64)
+            {
+                xbus_swap_uint64(&s, &s);
+            }
+            break;
         case XBUS_DATA_ID_LATLON_FLOAT_ENU:
             read_payload();
             memcpy(latlon.f32, packet.payload, packet.length);

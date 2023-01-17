@@ -19,6 +19,9 @@
 #define XBUS_DATA_CONFIG_ORIENTATION 1
 #define XBUS_DATA_CONFIG_IMU 1
 #define XBUS_DATA_CONFIG_BARO 1
+#define XBUS_DATA_CONFIG_FREE_ACCEL 1
+#define XBUS_DATA_CONFIG_DELTA_V 1
+#define XBUS_DATA_CONFIG_TEMPERATURE 1
 
 namespace xsens
 {
@@ -38,6 +41,12 @@ namespace xsens
         int32_t height;
 #endif
 
+#if XBUS_DATA_CONFIG_INS
+        T latlon[2];
+        T altitude;
+        T velocity[3];
+#endif
+
 #if XBUS_DATA_CONFIG_ORIENTATION
         T quat[4];
         T euler[3];
@@ -53,10 +62,16 @@ namespace xsens
         uint32_t baro;
 #endif
 
-#if XBUS_DATA_CONFIG_INS
-        T latlon[2];
-        T altitude;
-        T velocity[3];
+#if XBUS_DATA_CONFIG_FREE_ACCEL
+        T free_accel[3];
+#endif
+
+#if XBUS_DATA_CONFIG_DELTA_V
+        T delta_v[3];
+#endif
+
+#if XBUS_DATA_CONFIG_TEMPERATURE
+        T temperature;
 #endif
     };
     typedef struct xbus_motion_data<float> xbus_motion_data_float;
@@ -105,6 +120,24 @@ namespace xsens
 
     void xbus_get_all_data(xsens::Xbus &xbus, xsens::xbus_motion_data_double &data)
     {
+#if XBUS_DATA_CONFIG_GNSS_PVT
+        data.year = xbus.get_gnss().get_pvt().year;
+        data.month = xbus.get_gnss().get_pvt().month;
+        data.day = xbus.get_gnss().get_pvt().day;
+        data.hour = xbus.get_gnss().get_pvt().hour;
+        data.min = xbus.get_gnss().get_pvt().min;
+        data.sec = xbus.get_gnss().get_pvt().sec;
+        data.lat = xbus.get_gnss().get_pvt().lat;
+        data.lon = xbus.get_gnss().get_pvt().lon;
+        data.height = xbus.get_gnss().get_pvt().height;
+#endif
+
+#if XBUS_DATA_CONFIG_INS
+        memcpy(data.latlon, xbus.latlon.f64, sizeof(data.latlon));
+        memcpy(&data.altitude, &xbus.altitude.f64, sizeof(data.altitude));
+        memcpy(data.velocity, &xbus.velocity.f64, sizeof(data.velocity));
+#endif
+
 #if XBUS_DATA_CONFIG_ORIENTATION
         memcpy(data.quat, xbus.quat.f64, sizeof(data.quat));
         quat_to_euler(data.quat, data.euler);
@@ -120,22 +153,16 @@ namespace xsens
         data.baro = xbus.baro;
 #endif
 
-#if XBUS_DATA_CONFIG_INS
-        memcpy(data.latlon, xbus.latlon.f64, sizeof(data.latlon));
-        memcpy(&data.altitude, &xbus.altitude.f64, sizeof(data.altitude));
-        memcpy(data.velocity, &xbus.velocity.f64, sizeof(data.velocity));
+#if XBUS_DATA_CONFIG_FREE_ACCEL
+        memcpy(data.free_accel, xbus.free_accel.f64, sizeof(data.free_accel));
 #endif
 
-#if XBUS_DATA_CONFIG_GNSS_PVT
-        data.year = xbus.get_gnss().get_pvt().year;
-        data.month = xbus.get_gnss().get_pvt().month;
-        data.day = xbus.get_gnss().get_pvt().day;
-        data.hour = xbus.get_gnss().get_pvt().hour;
-        data.min = xbus.get_gnss().get_pvt().min;
-        data.sec = xbus.get_gnss().get_pvt().sec;
-        data.lat = xbus.get_gnss().get_pvt().lat;
-        data.lon = xbus.get_gnss().get_pvt().lon;
-        data.height = xbus.get_gnss().get_pvt().height;
+#if XBUS_DATA_CONFIG_DELTA_V
+        memcpy(data.delta_v, xbus.delta_v.f64, sizeof(data.delta_v));
+#endif
+
+#if XBUS_DATA_CONFIG_DELTA_V
+        data.temperature = xbus.temperature.f64;
 #endif
     }
 
