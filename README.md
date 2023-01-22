@@ -4,9 +4,9 @@ Date: 2022-12-29
 
 ## Introduction
 
-- Not official
-- This is an Arduino library for decoding the MT Xsens MTi-670 sensor's binary data stream encoded by the protocol `MTData2`.
-- Available measurements: (the ID of the following measurements has been added in the library)
+- Not official library
+- This is an Arduino library for decoding the `MT Xsens MTi-670` sensor's binary data stream encoded by the protocol `MTData2`.
+- Available measurements: (the ID of the following measurements has been added in this library)
   - quaternion (float/double)
   - Euler angle (float/double)
   - rate of turn (float/double)
@@ -16,10 +16,13 @@ Date: 2022-12-29
   - elliptic altitude (float/double)
   - latitude, longitude (float/double)
   - pvtData (float/double)
+- The boards tested and can be run:
+  - Teensy 3.2/4.0
+
 
 ## Name Space
 
-- This library uses the name space `xsens`.
+This library uses the name space `xsens`.
 
 ## How to use
 
@@ -53,17 +56,21 @@ xsens::xbus_motion_data_double data;
 
 void setup()
 {
-    xbus.begin(&HW_SERIAL_INTERFACE_XBUS, HW_SERIAL_BAUD_RATE_XBUS);
+    // Begin USB serial
+    Serial.begin(115200);
+
+    // Begin Xbus data stream
+    xbus.begin(HW_SERIAL_INTERFACE_XBUS, HW_SERIAL_BAUD_RATE_XBUS);
 }
 
 void loop()
 {
-    /* Pooling serial data */
+    /* Polling Xbus serial data */
     if (xbus.read() == Xbus::XD_OK)
     {
         /* Do something when the data packets has been decoded. */
         
-        // Get all data example routine
+        // Get all data
         xsens::xbus_get_all_data(xbus, data);
 
         // Print/Access data routine

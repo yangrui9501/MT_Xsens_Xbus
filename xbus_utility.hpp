@@ -176,7 +176,7 @@ namespace xsens
         Serial.print(data.quat[2]);
         Serial.print(", ");
         Serial.print(data.quat[3]);
-        Serial.print(")");
+        Serial.println(")");
     }
 
     void print_imu(xsens::xbus_motion_data_double &data)
@@ -199,7 +199,7 @@ namespace xsens
         Serial.print(data.mag[1]);
         Serial.print(", ");
         Serial.print(data.mag[2]);
-        Serial.print(")");
+        Serial.println(")");
     }
 
 #if XBUS_DATA_CONFIG_INS

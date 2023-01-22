@@ -40,7 +40,7 @@ namespace xsens
 
         // Begin Xbus data streaming
         void begin(HardwareSerial *_pSerial, int _baud_rate);
-
+        void begin(HardwareSerial &_pSerial, int _baud_rate);
         // Read all data in the serial buffer
         int read();
 
