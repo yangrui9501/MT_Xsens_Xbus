@@ -15,7 +15,9 @@
 
 namespace xsens
 {
-    void xbus_swap_uint16(void *_dest, void *_src);
-    void xbus_swap_uint32(void *_dest, void *_src);
-    void xbus_swap_uint64(void *_dest, void *_src);
+
+void xbus_swap_uint16(void* _dest, void* _src);
+void xbus_swap_uint32(void* _dest, void* _src);
+void xbus_swap_uint64(void* _dest, void* _src);
+
 }
