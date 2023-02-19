@@ -70,8 +70,34 @@ public:
     float gyro_hr[3];
     uint32_t baro;
     inline const GnssData& get_gnss() const { return gnss_data; }
-
+    const bool get_gyro_hr_double(double* _gyro_hr)
+    {
+        if (gyro_hr_is_updated)
+        {
+            gyro_hr_is_updated = false;
+            for (int i = 0; i < 3; i++)
+            {
+                _gyro_hr[i] = (double)(gyro_hr[i]);
+            }
+            return true;
+        }
+        return false;
+    }
+    const bool get_accel_hr_double(double* _accel_hr)
+    {
+        if (accel_hr_is_updated)
+        {
+            accel_hr_is_updated = false;
+            for (int i = 0; i < 3; i++)
+            {
+                _accel_hr[i] = (double)(accel_hr[i]);
+                return true;
+            }
+        }
+        return false;
+    }
 protected:
+    bool gyro_hr_is_updated, accel_hr_is_updated;
     struct Timers
     {
         SimpleTimer euler;

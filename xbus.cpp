@@ -206,7 +206,7 @@ void Xbus::parse_data()
         // timer.gyro_hr.elapsed();
         // timer.gyro_hr.begin();
         // Serial.println(timer.gyro_hr.get_time_duration());
-
+        gyro_hr_is_updated = true;
         read_payload();
         memcpy(gyro_hr, packet.payload, packet.length);
         for (auto& s : gyro_hr)
@@ -246,7 +246,7 @@ void Xbus::parse_data()
         // timer.accel_hr.elapsed();
         // timer.accel_hr.begin();
         // Serial.println(timer.accel_hr.get_time_duration());
-
+        accel_hr_is_updated = true;
         read_payload();
         memcpy(accel_hr, packet.payload, packet.length);
         for (auto& s : accel_hr)
