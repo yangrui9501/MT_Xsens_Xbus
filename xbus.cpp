@@ -203,6 +203,10 @@ void Xbus::parse_data()
         }
         break; // 2223-01-06 ok
     case XBUS_DATA_ID_GYRO_HR_FLOAT_ENU:
+        // timer.gyro_hr.elapsed();
+        // timer.gyro_hr.begin();
+        // Serial.println(timer.gyro_hr.get_time_duration());
+
         read_payload();
         memcpy(gyro_hr, packet.payload, packet.length);
         for (auto& s : gyro_hr)
@@ -239,6 +243,10 @@ void Xbus::parse_data()
         }
         break;
     case XBUS_DATA_ID_ACCEL_HR_FLOAT_ENU:
+        // timer.accel_hr.elapsed();
+        // timer.accel_hr.begin();
+        // Serial.println(timer.accel_hr.get_time_duration());
+
         read_payload();
         memcpy(accel_hr, packet.payload, packet.length);
         for (auto& s : accel_hr)

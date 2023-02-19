@@ -77,6 +77,8 @@ protected:
         SimpleTimer euler;
         SimpleTimer gyro;
         SimpleTimer mag;
+        SimpleTimer gyro_hr;
+        SimpleTimer accel_hr;
     } timer; // It will be removed in future release.
     struct
     {
