@@ -12,13 +12,15 @@ Date: 2022-12-29
   - rate of turn (float/double)
   - acceleration (float/double)
   - magnetometer (float/double)
+  - delta_v (double)
+  - free_accel (double)
   - baro pressure (float)
+  - temperature (double)
+  - high-rate acceleration (float)
+  - high-rate rate of turn (float)
   - elliptic altitude (float/double)
   - latitude, longitude (float/double)
   - pvtData (float/double)
-- The boards tested and can be run:
-  - Teensy 3.2/4.0
-
 
 ## Name Space
 
@@ -48,7 +50,7 @@ This library uses the name space `xsens`.
 // can be set to 1 or 0 to use or not use the corresponding measurement.
 
 
-#define HW_SERIAL_INTERFACE_XBUS Serial1 // Suppose that the headward serial `Serial1` is used
+#define HW_SERIAL_INTERFACE_XBUS Serial1 // Suppose that the hardware serial `Serial1` is used
 #define HW_SERIAL_BAUD_RATE_XBUS 2000000 // Suppose that the baud rate is set as 2000000
 
 xsens::Xbus xbus;

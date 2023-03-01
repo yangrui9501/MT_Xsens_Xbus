@@ -91,8 +91,8 @@ public:
             for (int i = 0; i < 3; i++)
             {
                 _accel_hr[i] = (double)(accel_hr[i]);
-                return true;
             }
+            return true;
         }
         return false;
     }
