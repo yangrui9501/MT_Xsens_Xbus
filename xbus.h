@@ -72,9 +72,9 @@ public:
     inline const GnssData& get_gnss() const { return gnss_data; }
     const bool get_gyro_hr_double(double* _gyro_hr)
     {
-        if (gyro_hr_is_updated)
+        if (is_update.gyro_hr)
         {
-            gyro_hr_is_updated = false;
+            is_update.gyro_hr = false;
             for (int i = 0; i < 3; i++)
             {
                 _gyro_hr[i] = (double)(gyro_hr[i]);
@@ -85,9 +85,9 @@ public:
     }
     const bool get_accel_hr_double(double* _accel_hr)
     {
-        if (accel_hr_is_updated)
+        if (is_update.accel_hr)
         {
-            accel_hr_is_updated = false;
+            is_update.accel_hr = true;
             for (int i = 0; i < 3; i++)
             {
                 _accel_hr[i] = (double)(accel_hr[i]);
@@ -96,16 +96,24 @@ public:
         }
         return false;
     }
-protected:
-    bool gyro_hr_is_updated, accel_hr_is_updated;
-    struct Timers
+    const bool get_free_accel(double* _free_accel)
     {
-        SimpleTimer euler;
-        SimpleTimer gyro;
-        SimpleTimer mag;
-        SimpleTimer gyro_hr;
-        SimpleTimer accel_hr;
-    } timer; // It will be removed in future release.
+        if (is_update.free_accel)
+        {
+            is_update.free_accel = false;
+            memcpy(_free_accel, free_accel.f64, sizeof(double) * 3U);
+            return true;
+        }
+        return false;
+    }
+protected:
+    // bool gyro_hr_is_updated, accel_hr_is_updated;
+    struct DataIsUpdate
+    {
+        bool gyro_hr;
+        bool accel_hr;
+        bool free_accel;
+    } is_update;
     struct
     {
         uint8_t preamble;

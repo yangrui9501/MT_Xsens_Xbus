@@ -183,9 +183,6 @@ void Xbus::parse_data()
         break; // 2023-01-06 ok
 
     case XBUS_DATA_ID_GYRO_FLOAT_ENU:
-        timer.gyro.elapsed();
-        timer.gyro.begin();
-
         read_payload();
         memcpy(gyro.f32, packet.payload, packet.length);
         for (auto& s : gyro.f32)
@@ -203,10 +200,7 @@ void Xbus::parse_data()
         }
         break; // 2223-01-06 ok
     case XBUS_DATA_ID_GYRO_HR_FLOAT_ENU:
-        // timer.gyro_hr.elapsed();
-        // timer.gyro_hr.begin();
-        // Serial.println(timer.gyro_hr.get_time_duration());
-        gyro_hr_is_updated = true;
+        is_update.gyro_hr = true;
         read_payload();
         memcpy(gyro_hr, packet.payload, packet.length);
         for (auto& s : gyro_hr)
@@ -235,6 +229,7 @@ void Xbus::parse_data()
         break; // 2023-01-06 ok
 
     case XBUS_DATA_ID_FREE_ACCEL_DOUBLE_ENU:
+        is_update.free_accel = true;
         read_payload();
         memcpy(free_accel.f64, packet.payload, packet.length);
         for (auto& s : free_accel.f64)
@@ -243,10 +238,7 @@ void Xbus::parse_data()
         }
         break;
     case XBUS_DATA_ID_ACCEL_HR_FLOAT_ENU:
-        // timer.accel_hr.elapsed();
-        // timer.accel_hr.begin();
-        // Serial.println(timer.accel_hr.get_time_duration());
-        accel_hr_is_updated = true;
+        is_update.accel_hr = true;
         read_payload();
         memcpy(accel_hr, packet.payload, packet.length);
         for (auto& s : accel_hr)
@@ -255,9 +247,6 @@ void Xbus::parse_data()
         }
         break;
     case XBUS_DATA_ID_MAG_FLOAT_ENU:
-        timer.mag.elapsed();
-        timer.mag.begin();
-
         read_payload();
         memcpy(mag.f32, packet.payload, packet.length);
         for (auto& s : mag.f32)
