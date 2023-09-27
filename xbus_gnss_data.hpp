@@ -29,7 +29,7 @@ protected:
         uint8_t hour;
         uint8_t min;
         uint8_t sec;
-        uint8_t valid;
+        uint8_t valid; // TODO
         uint32_t tAcc;
         int32_t nano;
         uint8_t fixType;
