@@ -25,9 +25,10 @@ namespace xsens
 class Xbus
 {
 public:
-    Xbus()
+    Xbus(): altitude{}, temperature{}, latlon{}, gyro{}, accel{}, mag{}, velocity{}, euler{}, delta_v{}, free_accel{},
+        quat{}, accel_hr{}, gyro_hr{}, baro(0), is_update{ false, false, false }, header{}, packet{}, checksum(0), gnss_data{}, event_flag(0), status(0), bytes_consumed(0), MySerial(nullptr)
     {
-        memset(this, 0, sizeof(Xbus));
+        // memset(this, 0, sizeof(Xbus)); // 2023-10-01
         bytes_consumed = 0x00;
     }
     enum XBUS_DATA_PARSE_STATUS
