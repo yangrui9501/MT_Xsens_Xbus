@@ -107,6 +107,16 @@ public:
         }
         return false;
     }
+    const bool get_mag(double* _mag)
+    {
+        if (is_update.mag)
+        {
+            is_update.mag = false;
+            memcpy(_mag, mag.f64, sizeof(double) * 3U);
+            return true;
+        }
+        return false;
+    }
 protected:
     // bool gyro_hr_is_updated, accel_hr_is_updated;
     struct DataIsUpdate
@@ -114,6 +124,7 @@ protected:
         bool gyro_hr;
         bool accel_hr;
         bool free_accel;
+        bool mag;
     } is_update;
     struct
     {

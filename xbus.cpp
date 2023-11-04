@@ -255,6 +255,7 @@ void Xbus::parse_data()
         }
         break; // 2023-01-06 ok
     case XBUS_DATA_ID_MAG_DOUBLE_ENU:
+        is_update.mag = true;
         read_payload();
         memcpy(mag.f64, packet.payload, packet.length);
         for (auto& s : mag.f64)
