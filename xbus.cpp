@@ -320,6 +320,7 @@ void Xbus::parse_data()
         }
         break; // 2023-01-06 ok
     case XBUS_DATA_ID_GNSS_PVTDATA_ENU:
+        is_update.gnss_pvt_data = true;
         read_payload();
         memcpy(&gnss_data.pvt_data, packet.payload, packet.length);
         gnss_data.swap();

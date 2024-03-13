@@ -70,7 +70,16 @@ public:
     float accel_hr[3];
     float gyro_hr[3];
     uint32_t baro;
-    inline const GnssData& get_gnss() const { return gnss_data; }
+    const bool get_gnss(GnssData& _pvt_data)
+    {
+        if (is_update.gnss_pvt_data)
+        {
+            is_update.gnss_pvt_data = false;
+            memcpy(&_pvt_data, &gnss_data.get_pvt(), sizeof(_pvt_data));
+            return true;
+        }
+        return false;
+    }
     const bool get_gyro_hr_double(double* _gyro_hr)
     {
         if (is_update.gyro_hr)
@@ -125,6 +134,7 @@ protected:
         bool accel_hr;
         bool free_accel;
         bool mag;
+        bool gnss_pvt_data;
     } is_update;
     struct
     {
