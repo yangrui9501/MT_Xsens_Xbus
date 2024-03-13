@@ -19,7 +19,7 @@ namespace xsens
 
 class GnssData
 {
-protected:
+public:
     struct PvtData
     {
         uint32_t iTOW;
@@ -57,7 +57,9 @@ protected:
         uint16_t hDop;
         uint16_t nDop;
         uint16_t eDop;
-    } pvt_data; // 要注意這個結構會多 2 bytes
+    };
+protected:
+    struct PvtData pvt_data; // 要注意這個結構會多 2 bytes
 
     void swap()
     {
@@ -71,6 +73,6 @@ public:
     GnssData() { memset(this, 0, sizeof(GnssData)); }
     const struct PvtData& get_pvt() const { return pvt_data; }
 
-friend class Xbus;
+    friend class Xbus;
 };
 }
