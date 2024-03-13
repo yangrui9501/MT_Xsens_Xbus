@@ -70,12 +70,13 @@ public:
     float accel_hr[3];
     float gyro_hr[3];
     uint32_t baro;
-    const bool get_gnss(GnssData& _pvt_data)
+    const bool get_gnss(xsens::GnssData::PvtData& _pvt_data)
     {
         if (is_update.gnss_pvt_data)
         {
             is_update.gnss_pvt_data = false;
-            memcpy(&_pvt_data, &gnss_data.get_pvt(), sizeof(_pvt_data));
+            // memcpy(&_pvt_data, &gnss_data.get_pvt(), sizeof(_pvt_data));
+            _pvt_data = gnss_data.get_pvt();
             return true;
         }
         return false;
