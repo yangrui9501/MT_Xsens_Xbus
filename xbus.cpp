@@ -16,29 +16,10 @@
 namespace xsens
 {
 
-void Xbus::begin(HardwareSerial* _pSerial, int _baud_rate)
-{
-    memset(serial_read_buf, 0, sizeof(serial_read_buf));
-    event_flag = XBUS_EVT_WAIT_PREAMBLE;
-
-    MySerial = _pSerial;
-    // MySerial->begin(_baud_rate);
-    // MySerial->addMemoryForRead(serial_read_buf, sizeof(serial_read_buf));
-}
-
-void Xbus::begin(HardwareSerial& _pSerial, int _baud_rate)
-{
-    memset(serial_read_buf, 0, sizeof(serial_read_buf));
-    event_flag = XBUS_EVT_WAIT_PREAMBLE;
-
-    MySerial = &_pSerial;
-    // MySerial->begin(_baud_rate);
-    // MySerial->addMemoryForRead(serial_read_buf, sizeof(serial_read_buf));
-}
-
 int Xbus::read()
 {
-    while (event_flag == XBUS_EVT_WAIT_PREAMBLE && MySerial->available() >= 4) // Search for XBUS_HEADER_PREAMBLE
+    auto buffer_size = buffer.size();
+    while (event_flag == XBUS_EVT_WAIT_PREAMBLE && buffer_size >= 4) // Search for XBUS_HEADER_PREAMBLE
     {
         checksum = 0x00;
 
@@ -82,7 +63,7 @@ int Xbus::read()
         status = XD_WAIT_PACKET_BYTE;
     }
 
-    while (event_flag == XBUS_EVT_WAIT_PACKETS && MySerial->available() >= (int)(header.length - bytes_consumed) + 1)
+    while (event_flag == XBUS_EVT_WAIT_PACKETS && buffer_size >= (int)(header.length - bytes_consumed) + 1)
     {
         // Read 3 bytes: 2 bytes ID, 1 byte data length
         packet.id[0] = read_buffer();
@@ -381,12 +362,16 @@ void Xbus::parse_data()
 
 uint8_t Xbus::read_buffer()
 {
-    // Calculate checksum
-    return (uint8_t)(MySerial->read());
+    // Get byte from FIFI buffer (this function will be called when buffer size is > 0)
+    uint8_t b = buffer.front();
+    // Remove byte from buffer
+    buffer.pop_front();
+    return b;
 }
 
 void Xbus::calculate_checksum(uint8_t& cs, uint8_t* data, int counts)
 {
+    // Calculate checksum
     for (int i = 0; i < counts; i++)
     {
         cs -= data[i];
