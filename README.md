@@ -29,57 +29,137 @@ This library uses the name space `xsens`.
 ## How to use
 
 ```cpp
-// 2023-01-16
-// Example: library utility
-// This simple example illustrates using this library to conduct data stream polling and decoded measurement data accessing.
-// Yang-Rui Li
-
+// 2025-05-10
 #include <Arduino.h>
-
-#include <xbus.h> 
-// Include the xbus data decoding core library
-
-#include <xbus_utility.hpp> 
-// It can be included or not for users' demands.
-// For different usages, the macros in "xbus_utility.hpp":
-//      #define XBUS_DATA_CONFIG_GNSS_PVT 0     // not used
-//      #define XBUS_DATA_CONFIG_INS 0          // not used
-//      #define XBUS_DATA_CONFIG_ORIENTATION 1  // used
-//      #define XBUS_DATA_CONFIG_IMU 1          // used
-//      #define XBUS_DATA_CONFIG_BARO 1         // used
-// can be set to 1 or 0 to use or not use the corresponding measurement.
-
-
-#define HW_SERIAL_INTERFACE_XBUS Serial1 // Suppose that the hardware serial `Serial1` is used
-#define HW_SERIAL_BAUD_RATE_XBUS 2000000 // Suppose that the baud rate is set as 2000000
+#include <xbus.h>
 
 xsens::Xbus xbus;
-xsens::xbus_motion_data_double data;
+auto &MTSerial = Serial4;
+const uint32_t MT_BAUD_RATE = 2000000;
+uint8_t mt_buffer[512];
+
+void print_mt_data()
+{
+	// Orientation: Quaternion
+	Serial.print("Quaternion : ");
+	for (int i = 0; i < 4; i++)
+	{
+		Serial.print(xbus.quat.f64[i]);
+		Serial.print(" ");
+	}
+	Serial.println();
+
+	// Inertial data: angular velocity
+	Serial.print("Angular velocity : ");
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(xbus.gyro.f64[i]);
+		Serial.print(" ");
+	}
+
+	// High-rate angular velocity
+	Serial.print("High-rate angular velocity : ");
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(xbus.gyro_hr[i]);
+		Serial.print(" ");
+	}
+	Serial.println();
+
+	// Inertial data: acceleration
+	Serial.print("Acceleration : ");
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(xbus.accel.f64[i]);
+		Serial.print(" ");
+	}
+
+	// High-rate acceleration
+	Serial.print("High-rate acceleration : ");
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(xbus.accel_hr[i]);
+		Serial.print(" ");
+	}
+	Serial.println();
+
+	// Free acceleration
+	Serial.print("Free acceleration : ");
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(xbus.free_accel.f64[i]);
+		Serial.print(" ");
+	}
+	Serial.println();
+
+	// Magnetometer data
+	Serial.print("Magnetometer : ");
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(xbus.mag.f64[i]);
+		Serial.print(" ");
+	}
+	Serial.println();
+
+	// Temperature
+	Serial.print("Temperature : ");
+	Serial.print(xbus.temperature.f64);
+	Serial.println();
+
+	// Barometer pressure
+	Serial.print(" Barometer : ");
+	Serial.print(xbus.baro);
+	Serial.println();
+}
 
 void setup()
 {
-    // Begin USB serial
-    Serial.begin(115200);
+	Serial.begin(115200);
+	MTSerial.begin(MT_BAUD_RATE);
 
-    // Begin Xbus data stream
-    xbus.begin(HW_SERIAL_INTERFACE_XBUS, HW_SERIAL_BAUD_RATE_XBUS);
+	pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop()
 {
-    /* Polling Xbus serial data */
-    if (xbus.read() == Xbus::XD_OK)
-    {
-        /* Do something when the data packets has been decoded. */
-        
-        // Get all data
-        xsens::xbus_get_all_data(xbus, data);
+	static unsigned long last_update; // For monitoring data update status
+	auto available_ = MTSerial.available();
+	if (available_ > 0)
+	{
+		// Saturate available_ to the buffer size
+		available_ = min(available_, sizeof(mt_buffer));
 
-        // Print/Access data routine
-        xsens::print_quaternion(data);
-        xsens::print_imu(data);
-        xsens::print_ins(data);
-        xsens::print_gnss(data);
-    }
+		auto length_ = MTSerial.readBytes(mt_buffer, available_);
+		if (xbus.parse(mt_buffer, length_) == xsens::Xbus::XD_OK)
+		{
+			last_update = micros();
+
+			// Print data
+			print_mt_data();
+		}
+	}
+
+	if (micros() - last_update >= 1000000)
+	{
+		last_update = micros();
+		Serial.println("No MT data available ...");
+	}
+
+	// For system status monitoring
+	static unsigned long last_time = 0;
+	if (micros() - last_time >= 500000)
+	{
+		last_time = micros();
+
+		// Toggle the LED when the system is running
+		digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+	}
 }
+```
+
+## How to include in a PlatformIO project?
+
+```bash
+lib_deps = 
+    https://github.com/yangrui9501/MT_Xsens_Xbus.git#new
 ```

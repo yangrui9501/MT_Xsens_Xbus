@@ -59,6 +59,25 @@ void print_mt_data()
 		Serial.print(" ");
 	}
 	Serial.println();
+
+	// Magnetometer data
+	Serial.print("Magnetometer : ");
+	for (int i = 0; i < 3; i++)
+	{
+		Serial.print(xbus.mag.f64[i]);
+		Serial.print(" ");
+	}
+	Serial.println();
+
+	// Temperature
+	Serial.print("Temperature : ");
+	Serial.print(xbus.temperature.f64);
+	Serial.println();
+
+	// Barometer pressure
+	Serial.print(" Barometer : ");
+	Serial.print(xbus.baro);
+	Serial.println();
 }
 
 void setup()
@@ -84,15 +103,14 @@ void loop()
 			last_update = micros();
 
 			// Print data
+			print_mt_data();
 		}
 	}
-	else
+
+	if (micros() - last_update >= 1000000)
 	{
-		if (micros() - last_update >= 1000000)
-		{
-			last_update = micros();
-			Serial.println("No MT data available ...");
-		}
+		last_update = micros();
+		Serial.println("No MT data available ...");
 	}
 
 	// For system status monitoring
