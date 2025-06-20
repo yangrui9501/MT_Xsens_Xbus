@@ -19,7 +19,6 @@
 #include "simple_timer.hpp"
 
 #define XBUS_PACKET_PAYLOAD_SIZE 512
-#define ADDITION_BUFFER_SIZE 512
 namespace xsens
 {
 class Xbus
