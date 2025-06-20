@@ -40,8 +40,7 @@ public:
     };
 
     // Begin Xbus data streaming
-    void begin(HardwareSerial* _pSerial, int _baud_rate);
-    void begin(HardwareSerial& _pSerial, int _baud_rate);
+    void begin(HardwareSerial& _pSerial);
     // Read all data in the serial buffer
     int read();
 
@@ -156,9 +155,7 @@ protected:
     int event_flag;
     int status;
     uint8_t bytes_consumed;
-
     HardwareSerial* MySerial;
-    uint8_t serial_read_buf[ADDITION_BUFFER_SIZE];
 
     // protected function prototype
     void parse_data();

@@ -16,24 +16,13 @@
 namespace xsens
 {
 
-void Xbus::begin(HardwareSerial* _pSerial, int _baud_rate) // TODO: to be removed
+void Xbus::begin(HardwareSerial& _pSerial)
 {
-    memset(serial_read_buf, 0, sizeof(serial_read_buf)); 
     event_flag = XBUS_EVT_WAIT_PREAMBLE;
 
-    MySerial = _pSerial;
-    // MySerial->begin(_baud_rate);
-    // MySerial->addMemoryForRead(serial_read_buf, sizeof(serial_read_buf));
-}
-
-void Xbus::begin(HardwareSerial& _pSerial, int _baud_rate)
-{
-    memset(serial_read_buf, 0, sizeof(serial_read_buf)); // TODO: to be removed
-    event_flag = XBUS_EVT_WAIT_PREAMBLE;
-
+    // Get serial interface pointer
     MySerial = &_pSerial;
-    // MySerial->begin(_baud_rate);
-    // MySerial->addMemoryForRead(serial_read_buf, sizeof(serial_read_buf));
+
 }
 
 int Xbus::read()
