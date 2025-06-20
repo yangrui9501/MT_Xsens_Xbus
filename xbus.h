@@ -165,5 +165,6 @@ protected:
     uint8_t read_buffer();
     void calculate_checksum(uint8_t& cs, uint8_t* data, int counts);
     void read_payload();
+    bool _has_unknown_id{false};
 };
 }

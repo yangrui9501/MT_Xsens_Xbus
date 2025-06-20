@@ -11,14 +11,14 @@
 
 #include "xbus.h"
 
- // #define XBUS_DEBUG_MODE
+//  #define XBUS_DEBUG_MODE
 
 namespace xsens
 {
 
-void Xbus::begin(HardwareSerial* _pSerial, int _baud_rate)
+void Xbus::begin(HardwareSerial* _pSerial, int _baud_rate) // TODO: to be removed
 {
-    memset(serial_read_buf, 0, sizeof(serial_read_buf));
+    memset(serial_read_buf, 0, sizeof(serial_read_buf)); 
     event_flag = XBUS_EVT_WAIT_PREAMBLE;
 
     MySerial = _pSerial;
@@ -28,7 +28,7 @@ void Xbus::begin(HardwareSerial* _pSerial, int _baud_rate)
 
 void Xbus::begin(HardwareSerial& _pSerial, int _baud_rate)
 {
-    memset(serial_read_buf, 0, sizeof(serial_read_buf));
+    memset(serial_read_buf, 0, sizeof(serial_read_buf)); // TODO: to be removed
     event_flag = XBUS_EVT_WAIT_PREAMBLE;
 
     MySerial = &_pSerial;
@@ -50,12 +50,14 @@ int Xbus::read()
             // Read 3 bytes: bid, mid, data length
             header.bid = read_buffer();
             header.mid = read_buffer();
-            header.length = read_buffer();
-
+            
             if ((header.bid == XBUS_HEADER_BID) && (header.mid == XBUS_HEADER_MID)) // Check for second and third start bytes
             {
                 event_flag = XBUS_EVT_WAIT_PACKETS;
                 bytes_consumed = 0x00;
+
+                header.length = read_buffer();
+
                 calculate_checksum(checksum, &header.bid, 3);
 
 #ifdef XBUS_DEBUG_MODE
@@ -69,6 +71,13 @@ int Xbus::read()
                 Serial.print(header.length, HEX);
                 Serial.println(" ");
 #endif
+            }
+        }
+        else 
+        {
+            if (_has_unknown_id) 
+            {
+                Serial.println("Can't get preamble bytes after unknown ID message is received ...");
             }
         }
     }
@@ -101,6 +110,7 @@ int Xbus::read()
 #endif
 
         // Check ID byte and parse data buffer
+        _has_unknown_id = false;
         parse_data();
         calculate_checksum(checksum, &packet.id[0], 0x03 + packet.length);
 
@@ -354,16 +364,19 @@ void Xbus::parse_data()
 #endif
         break;
     default:
+        _has_unknown_id = true;
         Serial.print("Error: No matched ID: ");
         Serial.print(packet.id[0], HEX);
         Serial.print(" ");
         Serial.print(packet.id[1], HEX);
-        Serial.print(" ");
+        Serial.print(" Length: ");
         Serial.print(packet.length);
         Serial.println();
 
-        bytes_consumed = 0x00;
-        event_flag = XBUS_EVT_WAIT_PREAMBLE;
+        read_payload(); // use up packet bytes for the unknown ID message
+        // bytes_consumed = 0x00;
+        // event_flag = XBUS_EVT_WAIT_PREAMBLE;
+        
         break;
     }
 #ifdef XBUS_DEBUG_MODE
