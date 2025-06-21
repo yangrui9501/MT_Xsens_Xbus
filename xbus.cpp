@@ -16,18 +16,9 @@
 namespace xsens
 {
 
-void Xbus::begin(HardwareSerial& _pSerial)
-{
-    event_flag = XBUS_EVT_WAIT_PREAMBLE;
-
-    // Get serial interface pointer
-    MySerial = &_pSerial;
-
-}
-
 int Xbus::read()
 {
-    while (event_flag == XBUS_EVT_WAIT_PREAMBLE && MySerial->available() >= 4) // Search for XBUS_HEADER_PREAMBLE
+    while (event_flag == XBUS_EVT_WAIT_PREAMBLE && _buffer.available() >= 4) // Search for XBUS_HEADER_PREAMBLE
     {
         checksum = 0x00;
 
@@ -80,7 +71,7 @@ int Xbus::read()
         status = XD_WAIT_PACKET_BYTE;
     }
 
-    while (event_flag == XBUS_EVT_WAIT_PACKETS && MySerial->available() >= (int)(header.length - bytes_consumed) + 1)
+    while (event_flag == XBUS_EVT_WAIT_PACKETS && _buffer.available() >= (int)(header.length - bytes_consumed) + 1)
     {
         // Read 3 bytes: 2 bytes ID, 1 byte data length
         packet.id[0] = read_buffer();
@@ -384,7 +375,8 @@ void Xbus::parse_data()
 uint8_t Xbus::read_buffer()
 {
     // Calculate checksum
-    return (uint8_t)(MySerial->read());
+    // return (uint8_t)(MySerial->read());
+    return _buffer.read();
 }
 
 void Xbus::calculate_checksum(uint8_t& cs, uint8_t* data, int counts)

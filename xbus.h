@@ -17,6 +17,7 @@
 #include "xbus_swap.h"
 #include "xbus_gnss_data.hpp"
 #include "simple_timer.hpp"
+#include "circular_buffer.hpp"
 
 #define XBUS_PACKET_PAYLOAD_SIZE 512
 namespace xsens
@@ -25,10 +26,10 @@ class Xbus
 {
 public:
     Xbus(): altitude{}, temperature{}, latlon{}, gyro{}, accel{}, mag{}, velocity{}, euler{}, delta_v{}, free_accel{},
-        quat{}, accel_hr{}, gyro_hr{}, baro(0), is_update{ false, false, false }, header{}, packet{}, checksum(0), gnss_data{}, event_flag(0), status(0), bytes_consumed(0), MySerial(nullptr)
+        quat{}, accel_hr{}, gyro_hr{}, baro(0), is_update{ false, false, false }, header{}, packet{}, checksum(0), gnss_data{}, status(0), bytes_consumed(0)
     {
-        // memset(this, 0, sizeof(Xbus)); // 2023-10-01
         bytes_consumed = 0x00;
+        event_flag = XBUS_EVT_WAIT_PREAMBLE;
     }
     enum XBUS_DATA_PARSE_STATUS
     {
@@ -39,7 +40,15 @@ public:
     };
 
     // Begin Xbus data streaming
-    void begin(HardwareSerial& _pSerial);
+    int parse(uint8_t* byte, int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            _buffer.write(byte[i]);
+        }
+        return read();
+    }
+
     // Read all data in the serial buffer
     int read();
 
@@ -73,7 +82,6 @@ public:
         if (is_update.gnss_pvt_data)
         {
             is_update.gnss_pvt_data = false;
-            // memcpy(&_pvt_data, &gnss_data.get_pvt(), sizeof(_pvt_data));
             _pvt_data = gnss_data.get_pvt();
             return true;
         }
@@ -154,7 +162,6 @@ protected:
     int event_flag;
     int status;
     uint8_t bytes_consumed;
-    HardwareSerial* MySerial;
 
     // protected function prototype
     void parse_data();
@@ -162,5 +169,6 @@ protected:
     void calculate_checksum(uint8_t& cs, uint8_t* data, int counts);
     void read_payload();
     bool _has_unknown_id{false};
+    ByteBuffer _buffer;
 };
 }
